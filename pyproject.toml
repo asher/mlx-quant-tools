@@ -1,0 +1,81 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mlx-quant-tools"
+version = "0.1.0"
+description = "Quantization tools for MLX models on Apple Silicon"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "Asher Feldman" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "safetensors",
+    "huggingface_hub",
+]
+
+[project.optional-dependencies]
+gguf = [
+    "gguf",
+    "numpy",
+    "transformers",
+    "tokenizers",
+]
+quant = [
+    "mlx @ git+https://github.com/asher/mlx.git@kquant",
+    "mlx-lm @ git+https://github.com/asher/mlx-lm.git@kquant",
+    "mlx-vlm @ git+https://github.com/asher/mlx-vlm.git@kquant",
+    "datasets",
+    "numpy",
+    "tqdm",
+]
+all = ["mlx-quant-tools[gguf,quant]"]
+dev = [
+    "ruff",
+    "pytest",
+]
+
+[project.scripts]
+mqt-quantize = "mlx_quant_tools.cli.attn_protect_quantize:main"
+mqt-quantize-kquant = "mlx_quant_tools.cli.quantize_kquant:main"
+mqt-score-kld = "mlx_quant_tools.cli.score_kld:main"
+mqt-inspect-recipe = "mlx_quant_tools.cli.inspect_recipe:main"
+mqt-make-kld-rollup = "mlx_quant_tools.cli.make_kld_rollup:main"
+mqt-validate-dequant = "mlx_quant_tools.cli.validate_kquant_dequant:main"
+mqt-dequant-gguf = "mlx_quant_tools.cli.dequant_gguf_kquant:main"
+mqt-gguf-to-mlx = "mlx_quant_tools.cli.gguf_to_mlx_kquant:main"
+mqt-run-gguf = "mlx_quant_tools.cli.run_gguf_kquant:main"
+mqt-load-kquant = "mlx_quant_tools.cli.load_mlx_kquant:main"
+mqt-serve-gguf = "mlx_quant_tools.cli.serve_gguf_kquant:main"
+mqt-calibrate-imatrix = "mlx_quant_tools.cli.calibrate_imatrix:main"
+
+[project.urls]
+Repository = "https://github.com/asher/mlx-quant-tools"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mlx_quant_tools"]
+
+[tool.ruff]
+src = ["src"]
+line-length = 99
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["mlx_quant_tools"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
